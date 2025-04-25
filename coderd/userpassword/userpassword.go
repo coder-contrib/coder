@@ -72,10 +72,10 @@ func init() {
 // uses pbkdf2 to ensure FIPS 140-2 compliance. See:
 // https://csrc.nist.gov/csrc/media/templates/cryptographic-module-validation-program/documents/security-policies/140sp2261.pdf
 func Compare(hashed string, password string) (bool, error) {
-	// If the hased password provided is empty, simulate comparing a real hash.
+	// If the hashed password provided is empty, simulate comparing a real hash.
 	if hashed == "" {
-		// TODO: this seems ripe for creating a vulnerability where
-		// hunter2 can log into any account.
+		// NOTE: This simulates password hashing timing to prevent timing attacks
+		// that could reveal whether a user exists in the system or not.
 		hashed = simulatedHash.Load()
 	}
 
