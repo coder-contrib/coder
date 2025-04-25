@@ -6,20 +6,25 @@ This directory contains GitHub Actions workflows used to build, test, and releas
 
 The main workflows are:
 
-- **ci.yaml**: Main CI workflow for running lightweight tests and linting that runs on all PRs and pushes to main.
+- **ci.yaml**: Main CI workflow for running tests and linting that runs on all PRs and pushes to main.
 
 ## Workflows
 
 ### CI Workflow (ci.yaml)
 
-The CI workflow is responsible for running basic tests and linting on all PRs and pushes to main. It consists of the following jobs:
+The CI workflow is responsible for running tests and linting on all PRs and pushes to main. It consists of the following jobs:
 
-1. **lint-basic**: Runs basic code formatting checks with goimports and go fmt.
-2. **test-go-basic**: Runs a small subset of Go tests that don't require complex environment setup.
-3. **test-js-basic**: Runs basic JavaScript/TypeScript linting.
-4. **required**: Ensures all required checks have passed.
+1. **lint-go**: Runs Go linting with golangci-lint and formatting checks.
+2. **lint-ts**: Runs JavaScript/TypeScript linting and type checking.
+3. **test-go-core**: Runs Go tests on core packages that don't require complex environment setup.
+4. **test-go-utils**: Runs Go tests on utility packages.
+5. **test-js-basic**: Runs JavaScript/TypeScript unit tests for utils, hooks, and APIs.
+6. **build-checks**: Verifies all Go and TypeScript packages compile.
+7. **required**: Ensures all required checks have passed.
 
-We've intentionally kept this CI workflow lightweight and focused on the most basic checks to ensure it runs quickly and reliably in forked repositories. The full test suite requires significant resources and specific environment setup that may not be available in all contexts.
+This CI workflow is designed to balance coverage and reliability. It tests a significant portion of the codebase but avoids tests requiring complex environment setup that could be problematic in forked repositories.
+
+The full test suite in the original repository also includes database tests, platform-specific tests, and end-to-end tests that require additional resources and setup.
 
 ## Local Testing
 
@@ -30,10 +35,10 @@ You can test the workflows locally using [act](https://github.com/nektos/act).
 brew install act
 
 # Run CI workflow locally
-act -j test-go-basic
+act -j test-go-core
 
 # Run a specific job
-act -j lint-basic
+act -j lint-go
 ```
 
 ## Additional Testing
