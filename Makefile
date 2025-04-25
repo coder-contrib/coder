@@ -1032,3 +1032,15 @@ endif
 
 dogfood/coder/nix.hash: flake.nix flake.lock
 	sha256sum flake.nix flake.lock >./dogfood/coder/nix.hash
+
+# Test the simplified CI workflow locally using act
+test-ci-workflow:
+	@echo "Testing CI workflow using act (https://github.com/nektos/act)"
+	@echo "Make sure you have act installed: brew install act"
+	@echo "Running lint job..."
+	act -j lint
+	@echo "Running test-go job..."
+	act -j test-go
+	@echo "Running test-js job..."
+	act -j test-js
+.PHONY: test-ci-workflow
