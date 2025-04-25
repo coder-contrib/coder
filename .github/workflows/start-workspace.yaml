@@ -67,5 +67,4 @@ jobs:
 
               If in a research/Q&A capacity, comment back on the issue to explain what you have discovered.
 
-              If there is also work to do, begin work and create a pull request with the solved issue. Watch the pull request for comments periodically so you
-              can address those comments too.
+              If there is also work to do, begin work and create a pull request with the solved issue. Include a link to the workspace (e.g. https://demo.coder.com/${{ steps.get-mapping.outputs.coder_username }}/issue-${{ github.event.issue.number }}) in the PR description, using the actual workspace URL that will be provided in the issue comment. Watch the pull request for comments periodically so you can address those comments too.
