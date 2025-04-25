@@ -139,12 +139,19 @@ func hashWithSaltAndIter(password string, salt []byte, iter int) string {
 func Validate(password string) error {
 	// Ensure passwords are secure enough!
 	// See: https://github.com/wagslane/go-password-validator#what-entropy-value-should-i-use
+	
+	// Use an entropy value of 52 bits as recommended by go-password-validator
+	// This typically requires a mix of uppercase, lowercase, numbers and/or special chars
 	err := passwordvalidator.Validate(password, 52)
 	if err != nil {
 		return err
 	}
-	if len(password) > 64 {
-		return xerrors.Errorf("password must be no more than %d characters", 64)
+	
+	// Maximum password length check to prevent DoS attacks
+	const maxPasswordLength = 64
+	if len(password) > maxPasswordLength {
+		return xerrors.Errorf("password must be no more than %d characters", maxPasswordLength)
 	}
+	
 	return nil
 }
