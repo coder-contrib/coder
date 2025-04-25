@@ -62,4 +62,10 @@ jobs:
           coder-token: ${{ secrets.CODER_TOKEN }}
           template-name: ${{ secrets.CODER_TEMPLATE_NAME }}
           parameters: |-
-            AI Prompt: "Use the gh CLI tool to read the details of issue https://github.com/${{ github.repository }}/issues/${{ github.event.issue.number }} and then address it."
+            AI Prompt: |
+              Use the gh CLI tool to read the details of issue https://github.com/${{ github.repository }}/issues/${{ github.event.issue.number }} and then address it.
+
+              If in a research/Q&A capacity, comment back on the issue to explain what you have discovered.
+
+              If there is also work to do, begin work and create a pull request with the solved issue. Watch the pull request for comments periodically so you
+              can address those comments too.
