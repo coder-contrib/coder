@@ -343,7 +343,13 @@ const TerminalPage: FC = () => {
 					agent={workspaceAgent}
 					status={connectionStatus}
 					onAlertChange={() => {
+						// Call fit twice to ensure proper sizing after alert changes
+						// The first call might not fully adjust, the second ensures proper sizing
 						fitAddonRef.current?.fit();
+						// Add a small delay before the second fit call to ensure DOM has updated
+						setTimeout(() => {
+							fitAddonRef.current?.fit();
+						}, 100);
 					}}
 				/>
 				<div

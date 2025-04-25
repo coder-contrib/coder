@@ -20,8 +20,13 @@ export const TerminalAlerts = ({
 	const lifecycleState = agent?.lifecycle_state;
 	const prevLifecycleState = useRef(lifecycleState);
 	useEffect(() => {
-		prevLifecycleState.current = lifecycleState;
-	}, [lifecycleState]);
+		// When the lifecycle state changes, especially to 'start_error', trigger terminal resize
+		if (prevLifecycleState.current !== lifecycleState) {
+			prevLifecycleState.current = lifecycleState;
+			// Call onAlertChange which triggers the terminal to resize after render
+			setTimeout(onAlertChange, 0);
+		}
+	}, [lifecycleState, onAlertChange]);
 
 	// We want to observe the children of the wrapper to detect when the alert
 	// changes. So the terminal page can resize itself.
