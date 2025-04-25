@@ -8,6 +8,7 @@ on:
 
 permissions:
   issues: write
+  contents: read
 
 jobs:
   comment:
@@ -18,15 +19,45 @@ jobs:
     environment: dev.coder.com
     timeout-minutes: 5
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Determine GitHub username
+        id: get-username
+        run: |
+          if [ "${{ github.event_name }}" == "issue_comment" ]; then
+            echo "github_username=${{ github.event.comment.user.login }}" >> $GITHUB_OUTPUT
+          else
+            echo "github_username=${{ github.event.issue.user.login }}" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Read username mapping
+        id: get-mapping
+        run: |
+          # Get GitHub username from previous step
+          GITHUB_USERNAME="${{ steps.get-username.outputs.github_username }}"
+          echo "Looking up Coder username for GitHub user: $GITHUB_USERNAME"
+          
+          # Read mapping from JSON file
+          CODER_USERNAME=$(jq -r ".githubToCoderUsernames.\"$GITHUB_USERNAME\"" username-mapping.json)
+          
+          # If username not found in mapping file, output error
+          if [ "$CODER_USERNAME" == "null" ]; then
+            echo "::error::GitHub username $GITHUB_USERNAME not found in username-mapping.json"
+            echo "using_default_username=true" >> $GITHUB_OUTPUT
+            echo "coder_username=defaultcoderuser" >> $GITHUB_OUTPUT
+          else
+            echo "Found mapping: $GITHUB_USERNAME -> $CODER_USERNAME"
+            echo "using_default_username=false" >> $GITHUB_OUTPUT
+            echo "coder_username=$CODER_USERNAME" >> $GITHUB_OUTPUT
+          fi
+      
       - name: Start Coder workspace
         uses: coder/start-workspace-action@35a4608cefc7e8cc56573cae7c3b85304575cb72
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          github-username: >-
-            ${{
-              (github.event_name == 'issue_comment' && github.event.comment.user.login) || 
-              (github.event_name == 'issues' && github.event.issue.user.login)
-            }}
+          # Use the mapped coder username directly instead of github-username
+          coder-username: ${{ steps.get-mapping.outputs.coder_username }}
           coder-url: ${{ secrets.CODER_URL }}
           coder-token: ${{ secrets.CODER_TOKEN }}
           template-name: ${{ secrets.CODER_TEMPLATE_NAME }}
