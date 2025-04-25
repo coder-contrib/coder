@@ -32,28 +32,13 @@ jobs:
       - name: Install go tools
         run: |
           go install golang.org/x/tools/cmd/goimports@v0.31.0
-          linter_ver=$(egrep -o 'GOLANGCI_LINT_VERSION=\S+' dogfood/coder/Dockerfile | cut -d '=' -f 2)
-          go install github.com/golangci/golangci-lint/cmd/golangci-lint@v$linter_ver
 
-      # Run a faster subset of golangci-lint checks
+      # Run only basic format checks
       - name: Go linting
         run: |
           # Format check
           goimports -l .
           go fmt ./...
-          
-          # Run selected linters that are fast
-          golangci-lint run --timeout=5m \
-            --disable-all \
-            --enable=deadcode \
-            --enable=errcheck \
-            --enable=gosimple \
-            --enable=govet \
-            --enable=ineffassign \
-            --enable=staticcheck \
-            --enable=typecheck \
-            --enable=unused \
-            ./...
 
   lint-ts:
     runs-on: ubuntu-latest

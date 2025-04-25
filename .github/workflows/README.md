@@ -14,7 +14,7 @@ The main workflows are:
 
 The CI workflow is responsible for running tests and linting on all PRs and pushes to main. It consists of the following jobs:
 
-1. **lint-go**: Runs Go linting with golangci-lint and formatting checks.
+1. **lint-go**: Runs Go formatting checks using goimports and go fmt.
 2. **lint-ts**: Runs JavaScript/TypeScript linting.
 3. **test-go-core**: Runs Go tests on core packages that don't require complex environment setup.
 4. **test-go-utils**: Runs Go tests on utility packages.
