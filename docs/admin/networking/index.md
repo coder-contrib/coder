@@ -12,7 +12,7 @@ When NAT traversal fails, connections are relayed through the coder server. All
 user-workspace connections are end-to-end encrypted.
 
 [Tailscale's open source](https://tailscale.com) backs our websocket/HTTPS
-networking logic.
+networking logic. This system, called [tailnet](./tailnet.md), provides secure connectivity between clients and workspace agents.
 
 ## Requirements
 
@@ -257,5 +257,6 @@ For help troubleshooting connection issues, including latency problems, refer to
 
 ## Up next
 
+- Learn about [Tailnet Architecture](./tailnet.md)
 - Learn about [Port Forwarding](./port-forwarding.md)
 - Troubleshoot [Networking Issues](./troubleshooting.md)
