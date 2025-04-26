@@ -142,9 +142,19 @@ func (*RootCmd) mcpConfigureClaudeCode() *serpent.Command {
 			} else {
 				configureClaudeEnv["CODER_AGENT_TOKEN"] = agentToken
 			}
+			// Check for AWS Bedrock or Google Vertex AI credentials
+			_, hasAWSKey := os.LookupEnv("AWS_ACCESS_KEY_ID")
+			_, hasAWSSecret := os.LookupEnv("AWS_SECRET_ACCESS_KEY") 
+			_, hasAWSProfile := os.LookupEnv("AWS_PROFILE")
+			_, hasGoogleCreds := os.LookupEnv("GOOGLE_APPLICATION_CREDENTIALS")
+			hasCloudProvider := (hasAWSKey && hasAWSSecret) || hasAWSProfile || hasGoogleCreds
+
 			if claudeAPIKey == "" {
 				if deprecatedCoderMCPClaudeAPIKey == "" {
-					cliui.Warnf(inv.Stderr, "CLAUDE_API_KEY is not set.")
+					// Only show the warning if there's no indication of cloud provider usage
+					if !hasCloudProvider {
+						cliui.Warnf(inv.Stderr, "CLAUDE_API_KEY is not set.")
+					}
 				} else {
 					cliui.Warnf(inv.Stderr, "CODER_MCP_CLAUDE_API_KEY is deprecated, use CLAUDE_API_KEY instead")
 					claudeAPIKey = deprecatedCoderMCPClaudeAPIKey
