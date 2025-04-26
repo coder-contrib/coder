@@ -230,7 +230,7 @@ coder create --rich-parameter-file params.yaml
 
 ## Full Example
 
-See the [list-string-parameters example template](https://github.com/coder/coder/tree/main/examples/parameters-list-string) for a complete implementation showcasing various styling and configuration options.
+Here's a complete example showing various styling and configuration options:
 
 ```tf
 data "coder_parameter" "environments" {
