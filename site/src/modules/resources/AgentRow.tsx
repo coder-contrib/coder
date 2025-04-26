@@ -159,6 +159,14 @@ export const AgentRow: FC<AgentRowProps> = ({
 		enabled: agent.status === "connected",
 		select: (res) => res.containers.filter((c) => c.status === "running"),
 	});
+	
+	// Check if the agent has an unhealthy status that requires more space for error display
+	const hasErrorState = 
+		agent.status === "timeout" || 
+		agent.lifecycle_state === "start_timeout" || 
+		agent.lifecycle_state === "start_error" || 
+		agent.lifecycle_state === "shutdown_timeout" || 
+		agent.lifecycle_state === "shutdown_error";
 
 	return (
 		<Stack
@@ -173,7 +181,11 @@ export const AgentRow: FC<AgentRowProps> = ({
 		>
 			<header css={styles.header}>
 				<div css={styles.agentInfo}>
-					<div css={styles.agentNameAndStatus}>
+					<div css={[
+						styles.agentNameAndStatus,
+						// Add more space for error states with inline text
+						hasErrorState && styles.agentNameAndStatusWithError
+					]}>
 						<AgentStatus agent={agent} />
 						<span css={styles.agentName}>{agent.name}</span>
 					</div>
@@ -473,6 +485,12 @@ const styles = {
 			width: "100%",
 		},
 	}),
+
+	agentNameAndStatusWithError: {
+		flexGrow: 1,
+		flexWrap: "wrap",
+		gap: "8px 16px", // Vertical gap 8px, horizontal gap 16px
+	},
 
 	agentName: (theme) => ({
 		whiteSpace: "nowrap",

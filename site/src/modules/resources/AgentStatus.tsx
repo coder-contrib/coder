@@ -13,7 +13,7 @@ import {
 import { PopoverTrigger } from "components/deprecated/Popover/Popover";
 import type { FC } from "react";
 
-// If we think in the agent status and lifecycle into a single enum/state I’d
+// If we think in the agent status and lifecycle into a single enum/state I'd
 // say we would have: connecting, timeout, disconnected, connected:created,
 // connected:starting, connected:start_timeout, connected:start_error,
 // connected:ready, connected:shutting_down, connected:shutdown_timeout,
@@ -48,50 +48,35 @@ interface AgentStatusProps {
 
 const StartTimeoutLifecycle: FC<AgentStatusProps> = ({ agent }) => {
 	return (
-		<HelpTooltip>
-			<PopoverTrigger role="status" aria-label="Agent timeout">
-				<WarningRounded css={styles.timeoutWarning} />
-			</PopoverTrigger>
-
-			<HelpTooltipContent>
-				<HelpTooltipTitle>Agent is taking too long to start</HelpTooltipTitle>
-				<HelpTooltipText>
-					We noticed this agent is taking longer than expected to start.{" "}
-					<Link
-						target="_blank"
-						rel="noreferrer"
-						href={agent.troubleshooting_url}
-					>
-						Troubleshoot
-					</Link>
-					.
-				</HelpTooltipText>
-			</HelpTooltipContent>
-		</HelpTooltip>
+		<div css={styles.statusWithText}>
+			<WarningRounded css={styles.timeoutWarning} />
+			<span css={styles.statusText}>Agent is taking too long to start</span>
+			<Link
+				target="_blank"
+				rel="noreferrer"
+				href={agent.troubleshooting_url}
+				css={styles.troubleshootLink}
+			>
+				Troubleshoot
+			</Link>
+		</div>
 	);
 };
 
 const StartErrorLifecycle: FC<AgentStatusProps> = ({ agent }) => {
 	return (
-		<HelpTooltip>
-			<PopoverTrigger role="status" aria-label="Start error">
-				<WarningRounded css={styles.errorWarning} />
-			</PopoverTrigger>
-			<HelpTooltipContent>
-				<HelpTooltipTitle>Error starting the agent</HelpTooltipTitle>
-				<HelpTooltipText>
-					Something went wrong during the agent startup.{" "}
-					<Link
-						target="_blank"
-						rel="noreferrer"
-						href={agent.troubleshooting_url}
-					>
-						Troubleshoot
-					</Link>
-					.
-				</HelpTooltipText>
-			</HelpTooltipContent>
-		</HelpTooltip>
+		<div css={styles.statusWithText}>
+			<WarningRounded css={styles.errorWarning} />
+			<span css={styles.statusText}>Error starting the agent</span>
+			<Link
+				target="_blank"
+				rel="noreferrer"
+				href={agent.troubleshooting_url}
+				css={styles.troubleshootLink}
+			>
+				Troubleshoot
+			</Link>
+		</div>
 	);
 };
 
@@ -109,49 +94,35 @@ const ShuttingDownLifecycle: FC = () => {
 
 const ShutdownTimeoutLifecycle: FC<AgentStatusProps> = ({ agent }) => {
 	return (
-		<HelpTooltip>
-			<PopoverTrigger role="status" aria-label="Stop timeout">
-				<WarningRounded css={styles.timeoutWarning} />
-			</PopoverTrigger>
-			<HelpTooltipContent>
-				<HelpTooltipTitle>Agent is taking too long to stop</HelpTooltipTitle>
-				<HelpTooltipText>
-					We noticed this agent is taking longer than expected to stop.{" "}
-					<Link
-						target="_blank"
-						rel="noreferrer"
-						href={agent.troubleshooting_url}
-					>
-						Troubleshoot
-					</Link>
-					.
-				</HelpTooltipText>
-			</HelpTooltipContent>
-		</HelpTooltip>
+		<div css={styles.statusWithText}>
+			<WarningRounded css={styles.timeoutWarning} />
+			<span css={styles.statusText}>Agent is taking too long to stop</span>
+			<Link
+				target="_blank"
+				rel="noreferrer"
+				href={agent.troubleshooting_url}
+				css={styles.troubleshootLink}
+			>
+				Troubleshoot
+			</Link>
+		</div>
 	);
 };
 
 const ShutdownErrorLifecycle: FC<AgentStatusProps> = ({ agent }) => {
 	return (
-		<HelpTooltip>
-			<PopoverTrigger role="status" aria-label="Stop error">
-				<WarningRounded css={styles.errorWarning} />
-			</PopoverTrigger>
-			<HelpTooltipContent>
-				<HelpTooltipTitle>Error stopping the agent</HelpTooltipTitle>
-				<HelpTooltipText>
-					Something went wrong while trying to stop the agent.{" "}
-					<Link
-						target="_blank"
-						rel="noreferrer"
-						href={agent.troubleshooting_url}
-					>
-						Troubleshoot
-					</Link>
-					.
-				</HelpTooltipText>
-			</HelpTooltipContent>
-		</HelpTooltip>
+		<div css={styles.statusWithText}>
+			<WarningRounded css={styles.errorWarning} />
+			<span css={styles.statusText}>Error stopping the agent</span>
+			<Link
+				target="_blank"
+				rel="noreferrer"
+				href={agent.troubleshooting_url}
+				css={styles.troubleshootLink}
+			>
+				Troubleshoot
+			</Link>
+		</div>
 	);
 };
 
@@ -229,25 +200,18 @@ const ConnectingStatus: FC = () => {
 
 const TimeoutStatus: FC<AgentStatusProps> = ({ agent }) => {
 	return (
-		<HelpTooltip>
-			<PopoverTrigger role="status" aria-label="Timeout">
-				<WarningRounded css={styles.timeoutWarning} />
-			</PopoverTrigger>
-			<HelpTooltipContent>
-				<HelpTooltipTitle>Agent is taking too long to connect</HelpTooltipTitle>
-				<HelpTooltipText>
-					We noticed this agent is taking longer than expected to connect.{" "}
-					<Link
-						target="_blank"
-						rel="noreferrer"
-						href={agent.troubleshooting_url}
-					>
-						Troubleshoot
-					</Link>
-					.
-				</HelpTooltipText>
-			</HelpTooltipContent>
-		</HelpTooltip>
+		<div css={styles.statusWithText}>
+			<WarningRounded css={styles.timeoutWarning} />
+			<span css={styles.statusText}>Agent is taking too long to connect</span>
+			<Link
+				target="_blank"
+				rel="noreferrer"
+				href={agent.troubleshooting_url}
+				css={styles.troubleshootLink}
+			>
+				Troubleshoot
+			</Link>
+		</div>
 	);
 };
 
@@ -309,6 +273,7 @@ const styles = {
 		width: 14,
 		height: 14,
 		position: "relative",
+		flexShrink: 0,
 	}),
 
 	errorWarning: (theme) => ({
@@ -316,5 +281,23 @@ const styles = {
 		width: 14,
 		height: 14,
 		position: "relative",
+		flexShrink: 0,
 	}),
+
+	statusWithText: {
+		display: "flex",
+		alignItems: "center",
+		gap: "8px",
+	},
+
+	statusText: (theme) => ({
+		fontSize: 12,
+		fontWeight: 500,
+		color: theme.palette.text.secondary,
+	}),
+
+	troubleshootLink: {
+		fontSize: 12,
+		fontWeight: 500,
+	}
 } satisfies Record<string, Interpolation<Theme>>;
