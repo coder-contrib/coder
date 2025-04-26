@@ -2,6 +2,13 @@ import OpenIcon from "@mui/icons-material/OpenInNewOutlined";
 import Link from "@mui/material/Link";
 import type { Template } from "api/typesGenerated";
 import { Avatar } from "components/Avatar/Avatar";
+
+// Add module augmentation for the Template interface
+declare module "api/typesGenerated" {
+	interface Template {
+		deleted?: boolean;
+	}
+}
 import { Button } from "components/Button/Button";
 import { Loader } from "components/Loader/Loader";
 import { MenuSearch } from "components/Menu/MenuSearch";
@@ -37,7 +44,9 @@ export const WorkspacesButton: FC<WorkspacesButtonProps> = ({
 	// Dataset should always be small enough that client-side filtering should be
 	// good enough. Can swap out down the line if it becomes an issue
 	const [searchTerm, setSearchTerm] = useState("");
-	const processed = sortTemplatesByUsersDesc(templates ?? [], searchTerm);
+	// Filter out deleted templates (if the deleted property exists)
+	const filteredTemplates = (templates ?? []).filter((template) => !template.deleted);
+	const processed = sortTemplatesByUsersDesc(filteredTemplates, searchTerm);
 
 	let emptyState: ReactNode = undefined;
 	if (templates?.length === 0) {

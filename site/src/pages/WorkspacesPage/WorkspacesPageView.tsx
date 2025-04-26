@@ -98,12 +98,12 @@ export const WorkspacesPageView: FC<WorkspacesPageViewProps> = ({
 		<Margins>
 			<PageHeader
 				actions={
-					<WorkspacesButton
+					!filterProps.filter.query.includes("deleted:true") && (<WorkspacesButton
 						templates={templates}
 						templatesFetchStatus={templatesFetchStatus}
 					>
 						New workspace
-					</WorkspacesButton>
+					</WorkspacesButton>)
 				}
 			>
 				<PageHeaderTitle>

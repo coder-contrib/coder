@@ -1,5 +1,12 @@
 import { API } from "api/api";
 import type { Template, WorkspaceStatus } from "api/typesGenerated";
+
+// Add module augmentation for the Template interface
+declare module "api/typesGenerated" {
+	interface Template {
+		deleted?: boolean;
+	}
+}
 import { Avatar } from "components/Avatar/Avatar";
 import {
 	SelectFilter,
@@ -26,9 +33,11 @@ export const useTemplateFilterMenu = ({
 		value,
 		id: "template",
 		getSelectedOption: async () => {
-			// Show all templates including deprecated
+			// Show all templates including deprecated but filter out deleted templates
 			const templates = await API.getTemplates();
-			const template = templates.find((template) => template.name === value);
+			const template = templates
+				.filter((t) => !t.deleted)
+				.find((template) => template.name === value);
 			if (template) {
 				return {
 					label: template.display_name || template.name,
@@ -39,13 +48,15 @@ export const useTemplateFilterMenu = ({
 			return null;
 		},
 		getOptions: async (query) => {
-			// Show all templates including deprecated
+			// Show all templates including deprecated but filter out deleted templates
 			const templates = await API.getTemplates();
-			const filteredTemplates = templates.filter(
-				(template) =>
-					template.name.toLowerCase().includes(query.toLowerCase()) ||
-					template.display_name.toLowerCase().includes(query.toLowerCase()),
-			);
+			const filteredTemplates = templates
+				.filter((t) => !t.deleted)
+				.filter(
+					(template) =>
+						template.name.toLowerCase().includes(query.toLowerCase()) ||
+						template.display_name.toLowerCase().includes(query.toLowerCase()),
+				);
 			return filteredTemplates.map((template) => ({
 				label: template.display_name || template.name,
 				value: template.name,
