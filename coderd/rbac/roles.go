@@ -358,6 +358,8 @@ func ReloadBuiltinRoles(opts *RoleOptions) {
 				policy.ActionCreate, policy.ActionRead, policy.ActionUpdate, policy.ActionDelete,
 				policy.ActionUpdatePersonal, policy.ActionReadPersonal,
 			},
+			// Allow creating API keys on behalf of other users
+			ResourceApiKey.Type:       {policy.ActionCreate, policy.ActionRead, policy.ActionDelete, policy.ActionUpdate},
 			ResourceGroup.Type:        {policy.ActionCreate, policy.ActionRead, policy.ActionUpdate, policy.ActionDelete},
 			ResourceGroupMember.Type:  {policy.ActionRead},
 			ResourceOrganization.Type: {policy.ActionRead},
