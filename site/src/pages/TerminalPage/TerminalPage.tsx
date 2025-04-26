@@ -143,10 +143,19 @@ const TerminalPage: FC = () => {
 
 		terminal.open(terminalWrapperRef.current);
 
-		// We have to fit twice here. It's unknown why, but the first fit will
-		// overflow slightly in some scenarios. Applying a second fit resolves this.
+		// We have to fit multiple times to ensure proper sizing.
+		// The first fit may overflow slightly in some scenarios.
+		// The second fit helps resolve this issue.
+		// The third fit (after a timeout) ensures proper sizing when alerts are present,
+		// especially important when a startup script has failed.
 		fitAddon.fit();
 		fitAddon.fit();
+		
+		// Apply an additional fit after a small delay to account for any alert banners
+		// that may be displayed when a startup script has failed
+		setTimeout(() => {
+			fitAddon.fit();
+		}, 100);
 
 		// This will trigger a resize event on the terminal.
 		const listener = () => fitAddon.fit();
@@ -343,7 +352,13 @@ const TerminalPage: FC = () => {
 					agent={workspaceAgent}
 					status={connectionStatus}
 					onAlertChange={() => {
+						// Call fit twice to ensure proper sizing even when alerts appear
+						// This is especially important for startup script failure alerts
 						fitAddonRef.current?.fit();
+						// Using setTimeout to ensure the second fit happens after DOM updates are complete
+						setTimeout(() => {
+							fitAddonRef.current?.fit();
+						}, 0);
 					}}
 				/>
 				<div

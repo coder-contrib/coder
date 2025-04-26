@@ -45,6 +45,19 @@ export const TerminalAlerts = ({
 			observer.disconnect();
 		};
 	}, [onAlertChange]);
+	
+	// Ensure the terminal is resized when the lifecycle state changes to "start_error"
+	// This is critical for fixing the issue with the terminal not fitting the screen
+	// when a startup script fails
+	useEffect(() => {
+		if (lifecycleState === "start_error") {
+			// Call the resize callback immediately
+			onAlertChange();
+			// And again after a short delay to ensure proper sizing
+			const timeoutId = setTimeout(onAlertChange, 100);
+			return () => clearTimeout(timeoutId);
+		}
+	}, [lifecycleState, onAlertChange]);
 
 	return (
 		<div ref={wrapperRef}>
