@@ -22,6 +22,16 @@ machine/VM.
 Events such as server errors, audit logs, user activities, and SSO & OpenID
 Connect logs are all captured in the `coderd` logs.
 
+### Request Logs
+
+Request logs include detailed information to help troubleshooting and auditing:
+
+- **Authentication Context**: Logs include requestor ID, name, and email for user subjects
+- **RBAC Subject Types**: Clearly identifies system services (provisioners, autostart, etc.)
+- **Route Parameters**: Includes workspace and agent name parameters for better traceability
+- **URL Parameters**: Query parameters are included with the prefix `params_`
+- **Database Context**: Information about database operations related to the request
+
 ## `provisionerd` Logs
 
 Logs for [external provisioners](../provisioners/index.md) are structured
