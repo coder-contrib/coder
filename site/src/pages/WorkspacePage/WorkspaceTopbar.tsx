@@ -263,6 +263,7 @@ export const WorkspaceTopbar: FC<WorkspaceProps> = ({
 						isUpdating={isUpdating}
 						isRestarting={isRestarting}
 						isOwner={isOwner}
+						canDeleteWorkspace={permissions.deleteWorkspace}
 					/>
 				</div>
 			)}

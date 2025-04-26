@@ -53,6 +53,7 @@ export interface WorkspaceActionsProps {
 	canChangeVersions: boolean;
 	canDebug: boolean;
 	isOwner: boolean;
+	canDeleteWorkspace?: boolean;
 }
 
 export const WorkspaceActions: FC<WorkspaceActionsProps> = ({
@@ -74,6 +75,7 @@ export const WorkspaceActions: FC<WorkspaceActionsProps> = ({
 	canChangeVersions,
 	canDebug,
 	isOwner,
+	canDeleteWorkspace,
 }) => {
 	const { duplicateWorkspace, isDuplicationReady } =
 		useWorkspaceDuplication(workspace);
@@ -217,14 +219,16 @@ export const WorkspaceActions: FC<WorkspaceActionsProps> = ({
 
 					<Divider />
 
-					<MoreMenuItem
-						danger
-						onClick={handleDelete}
-						data-testid="delete-button"
-					>
-						<DeleteIcon />
-						Delete&hellip;
-					</MoreMenuItem>
+					{canDeleteWorkspace !== false && (
+						<MoreMenuItem
+							danger
+							onClick={handleDelete}
+							data-testid="delete-button"
+						>
+							<DeleteIcon />
+							Delete&hellip;
+						</MoreMenuItem>
+					)}
 				</MoreMenuContent>
 			</MoreMenu>
 

@@ -18,6 +18,14 @@ export const workspaceChecks = (workspace: Workspace, template: Template) =>
 			},
 			action: "update",
 		},
+		deleteWorkspace: {
+			object: {
+				resource_type: "workspace",
+				resource_id: workspace.id,
+				owner_id: workspace.owner_id,
+			},
+			action: "delete",
+		},
 		updateTemplate: {
 			object: {
 				resource_type: "template",
