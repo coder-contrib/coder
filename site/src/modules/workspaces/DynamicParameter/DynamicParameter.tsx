@@ -293,7 +293,7 @@ const ParameterField: FC<ParameterFieldProps> = ({
 
 		case "slider":
 			return (
-				<div className="flex flex-row items-baseline gap-3">
+				<div className="flex flex-row items-center gap-4">
 					<Slider
 						className="mt-2"
 						defaultValue={[
@@ -308,7 +308,9 @@ const ParameterField: FC<ParameterFieldProps> = ({
 						max={parameter.validations[0]?.validation_max ?? 100}
 						disabled={disabled}
 					/>
-					<span className="w-4 font-medium">{parameter.value.value}</span>
+					<span className="w-8 text-center font-medium bg-surface-secondary rounded px-2 py-1">
+						{parameter.value.value}
+					</span>
 				</div>
 			);
 
