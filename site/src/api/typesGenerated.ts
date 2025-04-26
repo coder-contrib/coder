@@ -264,6 +264,7 @@ export interface BuildInfoResponse {
 	readonly upgrade_message: string;
 	readonly deployment_id: string;
 	readonly webpush_public_key?: string;
+	readonly hide_version: boolean;
 }
 
 // From codersdk/workspacebuilds.go

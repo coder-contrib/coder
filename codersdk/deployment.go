@@ -394,6 +394,7 @@ type DeploymentValues struct {
 	Notifications                   NotificationsConfig                  `json:"notifications,omitempty" typescript:",notnull"`
 	AdditionalCSPPolicy             serpent.StringArray                  `json:"additional_csp_policy,omitempty" typescript:",notnull"`
 	WorkspaceHostnameSuffix         serpent.String                       `json:"workspace_hostname_suffix,omitempty" typescript:",notnull"`
+	HideLoginVersion               serpent.Bool                         `json:"hide_login_version,omitempty" typescript:",notnull"`
 
 	Config      serpent.YAMLConfigPath `json:"config,omitempty" typescript:",notnull"`
 	WriteConfig serpent.Bool           `json:"write_config,omitempty" typescript:",notnull"`
@@ -2720,6 +2721,16 @@ Write out the current server config as YAML to stdout.`,
 			Value:       &c.AllowWorkspaceRenames,
 			YAML:        "allowWorkspaceRenames",
 		},
+		{
+			Name:        "Hide Version on Login Page",
+			Description: "If enabled, the Coder version will not be displayed on the login page.",
+			Flag:        "hide-login-version",
+			Env:         "CODER_HIDE_LOGIN_VERSION",
+			Default:     "false",
+			Value:       &c.HideLoginVersion,
+			Group:       &deploymentGroupClient,
+			YAML:        "hideLoginVersion",
+		},
 		// Healthcheck Options
 		{
 			Name:        "Health Check Refresh",
@@ -3212,6 +3223,9 @@ type BuildInfoResponse struct {
 
 	// WebPushPublicKey is the public key for push notifications via Web Push.
 	WebPushPublicKey string `json:"webpush_public_key,omitempty"`
+	
+	// HideVersion is a boolean that indicates whether the version should be hidden on the login page.
+	HideVersion bool `json:"hide_version"`
 }
 
 type WorkspaceProxyBuildInfo struct {

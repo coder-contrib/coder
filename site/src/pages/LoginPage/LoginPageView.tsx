@@ -60,7 +60,7 @@ export const LoginPageView: FC<LoginPageViewProps> = ({
 					<div>
 						Copyright &copy; {new Date().getFullYear()} Coder Technologies, Inc.
 					</div>
-					<div>{buildInfo?.version}</div>
+					{!buildInfo?.hide_version && <div>{buildInfo?.version}</div>}
 					{tosAccepted && (
 						<TermsOfServiceLink
 							url={authMethods?.terms_of_service_url}
