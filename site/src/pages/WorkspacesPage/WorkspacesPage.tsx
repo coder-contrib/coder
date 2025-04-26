@@ -52,7 +52,7 @@ const WorkspacesPage: FC = () => {
 		),
 	);
 
-	// Filter templates based on workspace creation permission
+	// Filter templates based on workspace creation permission and exclude deprecated templates
 	const filteredTemplates = useMemo(() => {
 		if (!templatesQuery.data || !workspacePermissionsQuery.data) {
 			return templatesQuery.data;
@@ -61,7 +61,8 @@ const WorkspacesPage: FC = () => {
 		return templatesQuery.data.filter((template) => {
 			const workspacePermission =
 				workspacePermissionsQuery.data[template.organization_id];
-			return workspacePermission?.createWorkspaceForUserID;
+			// Filter out deprecated templates and check permissions
+			return workspacePermission?.createWorkspaceForUserID && !template.deprecated;
 		});
 	}, [templatesQuery.data, workspacePermissionsQuery.data]);
 
