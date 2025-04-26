@@ -92,7 +92,7 @@ export const TemplateLayout: FC<PropsWithChildren> = ({
 
 	const location = useLocation();
 	const paths = location.pathname.split("/");
-	const activeTab = paths.at(-1) === templateName ? "summary" : paths.at(-1)!;
+	const activeTab = paths.at(-1) === templateName ? "docs" : paths.at(-1)!;
 	// Auditors should also be able to view insights, but do not automatically
 	// have permission to update templates. Need both checks.
 	const shouldShowInsights =
@@ -127,11 +127,11 @@ export const TemplateLayout: FC<PropsWithChildren> = ({
 			<Tabs active={activeTab} className="mb-10 -mt-3">
 				<Margins>
 					<TabsList>
-						<TabLink to="" value="summary">
-							Summary
-						</TabLink>
-						<TabLink to="docs" value="docs">
+						<TabLink to="" value="docs">
 							Docs
+						</TabLink>
+						<TabLink to="resources" value="resources">
+							Resources
 						</TabLink>
 						{data.permissions.canUpdateTemplate && (
 							<TabLink to="files" value="files">

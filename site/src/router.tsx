@@ -92,8 +92,8 @@ const TemplatePermissionsPage = lazy(
 			"./pages/TemplateSettingsPage/TemplatePermissionsPage/TemplatePermissionsPage"
 		),
 );
-const TemplateSummaryPage = lazy(
-	() => import("./pages/TemplatePage/TemplateSummaryPage/TemplateSummaryPage"),
+const TemplateResourcesPage = lazy(
+	() => import("./pages/TemplatePage/TemplateResourcesPage/TemplateResourcesPage"),
 );
 const CreateWorkspaceExperimentRouter = lazy(
 	() => import("./pages/CreateWorkspacePage/CreateWorkspaceExperimentRouter"),
@@ -329,8 +329,8 @@ const templateRouter = () => {
 		<Route path=":template">
 			<Route element={<TemplateRedirectController />}>
 				<Route element={<TemplateLayout />}>
-					<Route index element={<TemplateSummaryPage />} />
-					<Route path="docs" element={<TemplateDocsPage />} />
+					<Route index element={<TemplateDocsPage />} />
+					<Route path="resources" element={<TemplateResourcesPage />} />
 					<Route path="files" element={<TemplateFilesPage />} />
 					<Route path="versions" element={<TemplateVersionsPage />} />
 					<Route path="embed" element={<TemplateEmbedPage />} />
