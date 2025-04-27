@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
 	"strings"
 	"sync"
 
@@ -404,7 +405,21 @@ func ReadBodyAsError(res *http.Response) error {
 	if res.StatusCode == http.StatusUnauthorized {
 		// 401 means the user is not logged in
 		// 403 would mean that the user is not authorized
-		helpMessage = "Try logging in using 'coder login'."
+		// Check environment variables to customize the help message
+		url := os.Getenv("CODER_URL")
+		binaryPath := os.Getenv("CODER_SSH_CONFIG_BINARY_PATH")
+		
+		// Default to 'coder' if binary path is not specified
+		coderBinary := "coder"
+		if binaryPath != "" {
+			coderBinary = binaryPath
+		}
+		
+		if url != "" {
+			helpMessage = fmt.Sprintf("Try logging in using '%s login %s'.", coderBinary, url)
+		} else {
+			helpMessage = fmt.Sprintf("Try logging in using '%s login'.", coderBinary)
+		}
 	}
 
 	resp, err := io.ReadAll(res.Body)

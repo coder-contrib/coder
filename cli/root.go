@@ -72,7 +72,9 @@ const (
 	varDisableDirect           = "disable-direct-connections"
 	varDisableNetworkTelemetry = "disable-network-telemetry"
 
-	notLoggedInMessage = "You are not logged in. Try logging in using 'coder login <url>'."
+	// This message is used when the user is not logged in.
+	// The resulting hint will respect environment variables.
+	notLoggedInMessageTemplate = "You are not logged in. Try logging in using '%s login %s'."
 
 	envNoVersionCheck   = "CODER_NO_VERSION_WARNING"
 	envNoFeatureWarning = "CODER_NO_FEATURE_WARNING"
@@ -534,7 +536,23 @@ func (r *RootCmd) InitClient(client *codersdk.Client) serpent.MiddlewareFunc {
 				rawURL, err := conf.URL().Read()
 				// If the configuration files are absent, the user is logged out
 				if os.IsNotExist(err) {
-					return xerrors.New(notLoggedInMessage)
+					// Check for environment variables to customize error message
+					envURLValue := inv.Environ.Get(envURL)
+					binaryPathValue := inv.Environ.Get("CODER_SSH_CONFIG_BINARY_PATH")
+					
+					// Set defaults for binary path and URL
+					urlPlaceholder := "<url>"
+					binaryPath := "coder"
+					
+					// Override with environment variables if available
+					if envURLValue != "" {
+						urlPlaceholder = envURLValue
+					}
+					if binaryPathValue != "" {
+						binaryPath = binaryPathValue
+					}
+					
+					return xerrors.New(fmt.Sprintf(notLoggedInMessageTemplate, binaryPath, urlPlaceholder))
 				}
 				if err != nil {
 					return err

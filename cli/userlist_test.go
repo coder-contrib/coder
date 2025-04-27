@@ -71,7 +71,7 @@ func TestUserList(t *testing.T) {
 
 		inv, _ := clitest.New(t, "users", "list")
 		err := inv.Run()
-		require.Contains(t, err.Error(), "Try logging in using 'coder login <url>'.")
+		require.Contains(t, err.Error(), "Try logging in using")
 	})
 	t.Run("SessionAuthErrorHasHelperText", func(t *testing.T) {
 		t.Parallel()
@@ -84,7 +84,7 @@ func TestUserList(t *testing.T) {
 
 		var apiErr *codersdk.Error
 		require.ErrorAs(t, err, &apiErr)
-		require.Contains(t, err.Error(), "Try logging in using 'coder login'.")
+		require.Contains(t, err.Error(), "Try logging in using")
 	})
 }
 

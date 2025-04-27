@@ -68,7 +68,25 @@ func (r *RootCmd) logout() *serpent.Command {
 				errorString := strings.TrimRight(errorStringBuilder.String(), "\n")
 				return xerrors.New("Failed to log out.\n" + errorString)
 			}
-			_, _ = fmt.Fprint(inv.Stdout, Caret+"You are no longer logged in. You can log in using 'coder login <url>'.\n")
+			// Check for environment variables to customize the message
+			envURLValue := inv.Environ.Get(envURL)
+			binaryPathValue := inv.Environ.Get("CODER_SSH_CONFIG_BINARY_PATH")
+				
+			// Set defaults
+			urlPlaceholder := "<url>"
+			binaryPath := "coder"
+				
+			// Override with environment variables if available
+			if envURLValue != "" {
+				urlPlaceholder = envURLValue
+			}
+			if binaryPathValue != "" {
+				binaryPath = binaryPathValue
+			}
+				
+			loginMessage := fmt.Sprintf("You are no longer logged in. You can log in using '%s login %s'.\n",
+				binaryPath, urlPlaceholder)
+			_, _ = fmt.Fprint(inv.Stdout, Caret+loginMessage)
 			return nil
 		},
 	}
