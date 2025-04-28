@@ -9,6 +9,34 @@ This document provides guidelines for Claude when working with the Coder codebas
 - Write thorough tests for new functionality
 - Ensure code is well-documented with comments explaining "why" not just "what"
 - Run tests before submitting changes
+- Design clean, higher-level APIs with appropriate method visibility
+- Keep public interfaces minimal and focused; don't expose methods only used for testing
+- Balance theoretical correctness with practical considerations
+
+## API Design Principles
+
+- Public APIs should be intentional, not accidental
+- Consider who the users of your API are and what they need
+- Avoid exposing internal implementation details
+- Design for future extensibility without breaking changes
+- Provide meaningful error messages that aid in debugging
+- Consider backward compatibility implications
+
+## Error Handling
+
+- Be pragmatic with error handling - focus on realistic failure scenarios
+- Balance defensive coding against code complexity
+- Ensure critical paths have appropriate error handling
+- Consider the diagnostic value of error messages for operators
+- Propagate context with errors when it adds debugging value
+
+## Concurrency and Performance
+
+- Pay careful attention to concurrency and potential race conditions
+- Be explicit about guarantees of sequential execution
+- Consider performance implications, particularly for database operations
+- Optimize database queries for common access patterns
+- Document synchronization mechanisms and concurrency assumptions
 
 ## Commit Conventions
 
@@ -31,6 +59,7 @@ This document provides guidelines for Claude when working with the Coder codebas
 - Place new code in appropriate packages based on its functionality
 - Respect API boundaries between different parts of the codebase
 - Use standard Go project layout conventions
+- Keep related functionality together; split only when clear boundaries emerge
 
 ## Testing
 
@@ -38,6 +67,9 @@ This document provides guidelines for Claude when working with the Coder codebas
 - Ensure tests are deterministic and don't have race conditions
 - Consider adding integration tests for complex features
 - Mock external dependencies appropriately in tests
+- Include meaningful diagnostic data in test logs to help debug failures
+- Test edge cases and error paths, not just the happy path
+- Value the ability to debug rare failures through logging
 
 ## Documentation
 
@@ -45,6 +77,7 @@ This document provides guidelines for Claude when working with the Coder codebas
 - Add clear docstrings to public functions and types
 - Include examples where appropriate
 - Update changelog entries for significant changes
+- Document assumptions and non-obvious behaviors
 
 ## Experimental Features
 
