@@ -274,20 +274,34 @@ const ParameterField: FC<ParameterFieldProps> = ({
 			);
 
 		case "checkbox":
+			const hasDescription = parameter.description && parameter.description !== "";
+			// Check for custom label in styling property
+			const customLabel = (parameter.styling as { label?: string })?.label;
+			
 			return (
-				<div className="flex items-center space-x-2">
-					<Checkbox
-						id={parameter.name}
-						checked={value === "true"}
-						defaultChecked={defaultValue === "true"} // TODO: defaultChecked is always overridden by checked
-						onCheckedChange={(checked) => {
-							onChange(checked ? "true" : "false");
-						}}
-						disabled={disabled}
-					/>
-					<Label htmlFor={parameter.name}>
-						{parameter.display_name || parameter.name}
-					</Label>
+				<div className="flex flex-col gap-1">
+					<div className="flex items-center space-x-2">
+						<Checkbox
+							id={parameter.name}
+							checked={value === "true"}
+							defaultChecked={defaultValue === "true"} // TODO: defaultChecked is always overridden by checked
+							onCheckedChange={(checked) => {
+								onChange(checked ? "true" : "false");
+							}}
+							disabled={disabled}
+						/>
+						<Label htmlFor={parameter.name} className="flex gap-2 flex-wrap">
+							{customLabel || "Enable"}
+						</Label>
+					</div>
+					
+					{hasDescription && (
+						<div className="text-content-secondary ml-7">
+							<MemoizedMarkdown className="text-xs">
+								{parameter.description}
+							</MemoizedMarkdown>
+						</div>
+					)}
 				</div>
 			);
 
