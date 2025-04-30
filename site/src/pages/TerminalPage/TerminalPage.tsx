@@ -343,7 +343,15 @@ const TerminalPage: FC = () => {
 					agent={workspaceAgent}
 					status={connectionStatus}
 					onAlertChange={() => {
+						// First fit might not calculate correctly, apply a small delay and fit again
 						fitAddonRef.current?.fit();
+						
+						// Apply a second fit after a small delay to ensure terminal size is correct
+						// This fixes the issue where text at the bottom of the terminal is hidden
+						// when startup scripts fail
+						setTimeout(() => {
+							fitAddonRef.current?.fit();
+						}, 100);
 					}}
 				/>
 				<div
