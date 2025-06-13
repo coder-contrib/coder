@@ -72,7 +72,8 @@ const (
 	varDisableDirect           = "disable-direct-connections"
 	varDisableNetworkTelemetry = "disable-network-telemetry"
 
-	notLoggedInMessage = "You are not logged in. Try logging in using 'coder login <url>'."
+	// Default login message constants and environment variables are now handled by the BuildLoginMessage function
+
 
 	envNoVersionCheck   = "CODER_NO_VERSION_WARNING"
 	envNoFeatureWarning = "CODER_NO_FEATURE_WARNING"
@@ -83,6 +84,31 @@ const (
 	envAgentTokenFile = "CODER_AGENT_TOKEN_FILE"
 	envURL            = "CODER_URL"
 )
+
+// BuildLoginMessage generates a not logged in message with optional environmental context.
+// It will use CODER_URL and CODER_SSH_CONFIG_BINARY_PATH environment variables if they are set.
+func BuildLoginMessage(additionalContext ...string) string {
+	coderBinary := "coder"
+	// Check if a custom binary path is specified
+	if binPath := os.Getenv("CODER_SSH_CONFIG_BINARY_PATH"); binPath != "" {
+		coderBinary = binPath
+	}
+
+	url := "<url>"
+	// Check if a URL is specified in the environment
+	if envURL := os.Getenv(envURL); envURL != "" {
+		url = envURL
+	}
+
+	baseMessage := fmt.Sprintf("You are not logged in. Try logging in using '%s login %s'.", coderBinary, url)
+	
+	if len(additionalContext) == 0 {
+		return baseMessage
+	}
+	
+	contextMessage := strings.Join(additionalContext, " ")
+	return fmt.Sprintf("%s (%s)", baseMessage, contextMessage)
+}
 
 func (r *RootCmd) CoreSubcommands() []*serpent.Command {
 	// Please re-sort this list alphabetically if you change it!
@@ -534,7 +560,7 @@ func (r *RootCmd) InitClient(client *codersdk.Client) serpent.MiddlewareFunc {
 				rawURL, err := conf.URL().Read()
 				// If the configuration files are absent, the user is logged out
 				if os.IsNotExist(err) {
-					return xerrors.New(notLoggedInMessage)
+					return xerrors.New(BuildLoginMessage())
 				}
 				if err != nil {
 					return err
