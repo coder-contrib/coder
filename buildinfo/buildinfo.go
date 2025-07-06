@@ -108,6 +108,7 @@ func IsAGPL() bool {
 	return strings.Contains(agpl, "t")
 }
 
+// IsBoringCrypto returns true if BoringCrypto is enabled for this build.
 func IsBoringCrypto() bool {
 	return boringcrypto
 }
