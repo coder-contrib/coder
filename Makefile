@@ -1,7 +1,11 @@
 # This is the Coder Makefile. The build directory for most tasks is `build/`.
+# 
+# Main function: Default target is `build-fat` which builds a full binary with UI
+# for each supported OS/architecture combination. This provides the complete
+# Coder binary for provisioning development environments.
 #
 # These are the targets you're probably looking for:
-# - clean
+# - clean 
 # - build-fat: builds all "fat" binaries for all architectures
 # - build-slim: builds all "slim" binaries (no frontend or slim binaries
 #   embedded) for all architectures
