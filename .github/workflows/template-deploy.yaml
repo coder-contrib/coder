@@ -1,0 +1,38 @@
+name: Deploy Coder Template
+
+on:
+  push:
+    paths:
+      - 'templates/**'
+  workflow_dispatch:
+    inputs:
+      template_path:
+        description: 'Path to template directory'
+        required: true
+        default: 'templates/default'
+
+env:
+  CODER_URL: ${{ secrets.CODER_URL }}
+  CODER_SESSION_TOKEN: ${{ secrets.CODER_SESSION_TOKEN }}
+
+jobs:
+  deploy-template:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Coder CLI
+        run: |
+          curl -L https://coder.com/install.sh | sh
+          coder login ${{ env.CODER_URL }} --session-token ${{ env.CODER_SESSION_TOKEN }}
+
+      - name: Create and Push Template
+        run: |
+          TEMPLATE_DIR="${{ github.event.inputs.template_path || 'templates/default' }}"
+          TEMPLATE_NAME=$(basename $TEMPLATE_DIR)
+          
+          cd $TEMPLATE_DIR
+          coder template create -y $TEMPLATE_NAME
+          
+          VERSION_ID=$(coder templates versions ls -c active $TEMPLATE_NAME --output json | jq -r '.[0].id')
+          coder templates push $TEMPLATE_NAME $VERSION_ID
