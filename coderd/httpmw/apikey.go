@@ -80,6 +80,16 @@ const (
 	internalErrorMessage  = "An internal error occurred. Please try again or contact the system administrator."
 )
 
+// GetBinaryPath returns the path to the Coder binary, either from the environment variable
+// or defaults to "coder"
+func GetBinaryPath() string {
+	binaryPath := os.Getenv("CODER_SSH_CONFIG_BINARY_PATH")
+	if binaryPath == "" {
+		return "coder"
+	}
+	return binaryPath
+}
+
 type ExtractAPIKeyConfig struct {
 	DB                          database.Store
 	ActivateDormantUser         func(ctx context.Context, u database.User) (database.User, error)

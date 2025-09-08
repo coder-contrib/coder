@@ -72,7 +72,15 @@ const (
 	varDisableDirect           = "disable-direct-connections"
 	varDisableNetworkTelemetry = "disable-network-telemetry"
 
-	notLoggedInMessage = "You are not logged in. Try logging in using 'coder login <url>'."
+	notLoggedInMessage = "You are not logged in. Try logging in using 'coder login " + getCoderURL() + "'."
+
+func getCoderURL() string {
+	url := os.Getenv("CODER_URL")
+	if url == "" {
+		return "<url>"
+	}
+	return url
+}
 
 	envNoVersionCheck   = "CODER_NO_VERSION_WARNING"
 	envNoFeatureWarning = "CODER_NO_FEATURE_WARNING"
