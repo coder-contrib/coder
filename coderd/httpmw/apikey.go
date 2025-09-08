@@ -10,6 +10,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 
@@ -76,7 +77,7 @@ func (c *OAuth2Configs) IsZero() bool {
 }
 
 const (
-	SignedOutErrorMessage = "You are signed out or your session has expired. Please sign in again to continue."
+	SignedOutErrorMessage = "You are signed out or your session has expired. Please sign in again to continue. Try logging in using 'coder login %s'."
 	internalErrorMessage  = "An internal error occurred. Please try again or contact the system administrator."
 )
 
@@ -146,10 +147,10 @@ func APIKeyFromRequest(ctx context.Context, db database.Store, sessionTokenFunc 
 		tokenFunc = sessionTokenFunc
 	}
 
-	token := tokenFunc(r)
+	token, coderURL := tokenFunc(r)
 	if token == "" {
 		return nil, codersdk.Response{
-			Message: SignedOutErrorMessage,
+			Message: fmt.Sprintf(SignedOutErrorMessage, coderURL),
 			Detail:  fmt.Sprintf("Cookie %q or query parameter must be provided.", codersdk.SessionTokenCookie),
 		}, false
 	}
@@ -157,7 +158,7 @@ func APIKeyFromRequest(ctx context.Context, db database.Store, sessionTokenFunc 
 	keyID, keySecret, err := SplitAPIToken(token)
 	if err != nil {
 		return nil, codersdk.Response{
-			Message: SignedOutErrorMessage,
+			Message: fmt.Sprintf(SignedOutErrorMessage, coderURL),
 			Detail:  "Invalid API key format: " + err.Error(),
 		}, false
 	}
@@ -167,7 +168,7 @@ func APIKeyFromRequest(ctx context.Context, db database.Store, sessionTokenFunc 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, codersdk.Response{
-				Message: SignedOutErrorMessage,
+				Message: fmt.Sprintf(SignedOutErrorMessage, coderURL),
 				Detail:  "API key is invalid.",
 			}, false
 		}
@@ -182,7 +183,7 @@ func APIKeyFromRequest(ctx context.Context, db database.Store, sessionTokenFunc 
 	hashedSecret := sha256.Sum256([]byte(keySecret))
 	if subtle.ConstantTimeCompare(key.HashedSecret, hashedSecret[:]) != 1 {
 		return nil, codersdk.Response{
-			Message: SignedOutErrorMessage,
+			Message: fmt.Sprintf(SignedOutErrorMessage, coderURL),
 			Detail:  "API key secret is invalid.",
 		}, false
 	}
@@ -247,7 +248,7 @@ func ExtractAPIKey(rw http.ResponseWriter, r *http.Request, cfg ExtractAPIKeyCon
 		})
 		if errors.Is(err, sql.ErrNoRows) {
 			return optionalWrite(http.StatusUnauthorized, codersdk.Response{
-				Message: SignedOutErrorMessage,
+				Message: fmt.Sprintf(SignedOutErrorMessage, coderURL),
 				Detail:  "You must re-authenticate with the login provider.",
 			})
 		}
@@ -318,7 +319,7 @@ func ExtractAPIKey(rw http.ResponseWriter, r *http.Request, cfg ExtractAPIKeyCon
 	// in site/src/components/RequireAuth/RequireAuth.tsx as well.
 	if key.ExpiresAt.Before(now) {
 		return optionalWrite(http.StatusUnauthorized, codersdk.Response{
-			Message: SignedOutErrorMessage,
+			Message: fmt.Sprintf(SignedOutErrorMessage, coderURL),
 			Detail:  fmt.Sprintf("API key expired at %q.", key.ExpiresAt.String()),
 		})
 	}
@@ -483,23 +484,30 @@ func UserRBACSubject(ctx context.Context, db database.Store, userID uuid.UUID, s
 // 3. The custom auth header
 //
 // API tokens for apps are read from workspaceapps/cookies.go.
-func APITokenFromRequest(r *http.Request) string {
+func APITokenFromRequest(r *http.Request) (string, string) {
+	coderURL := r.Header.Get("X-Coder-URL")
+	if coderURL == "" {
+		coderURL = os.Getenv("CODER_URL")
+		if coderURL == "" {
+			coderURL = "<url>"
+		}
+	}
 	cookie, err := r.Cookie(codersdk.SessionTokenCookie)
 	if err == nil && cookie.Value != "" {
-		return cookie.Value
+		return cookie.Value, coderURL
 	}
 
 	urlValue := r.URL.Query().Get(codersdk.SessionTokenCookie)
 	if urlValue != "" {
-		return urlValue
+		return urlValue, coderURL
 	}
 
 	headerValue := r.Header.Get(codersdk.SessionTokenHeader)
 	if headerValue != "" {
-		return headerValue
+		return headerValue, coderURL
 	}
 
-	return ""
+	return "", coderURL
 }
 
 // SplitAPIToken verifies the format of an API key and returns the split ID and
