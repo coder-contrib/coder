@@ -32,13 +32,7 @@ const ReadyLifecycle: FC = () => {
 
 const StartingLifecycle: FC = () => {
 	return (
-		<Tooltip title="Starting...">
-			<div
-				role="status"
-				aria-label="Starting..."
-				css={[styles.status, styles.connecting]}
-			/>
-		</Tooltip>
+		<div role="status" aria-label="Starting..." css={[styles.status, styles.connecting]} />
 	);
 };
 
@@ -48,50 +42,33 @@ interface AgentStatusProps {
 
 const StartTimeoutLifecycle: FC<AgentStatusProps> = ({ agent }) => {
 	return (
-		<HelpTooltip>
-			<PopoverTrigger role="status" aria-label="Agent timeout">
-				<WarningRounded css={styles.timeoutWarning} />
-			</PopoverTrigger>
-
-			<HelpTooltipContent>
-				<HelpTooltipTitle>Agent is taking too long to start</HelpTooltipTitle>
-				<HelpTooltipText>
-					We noticed this agent is taking longer than expected to start.{" "}
-					<Link
-						target="_blank"
-						rel="noreferrer"
-						href={agent.troubleshooting_url}
-					>
-						Troubleshoot
-					</Link>
-					.
-				</HelpTooltipText>
-			</HelpTooltipContent>
-		</HelpTooltip>
+		<div css={styles.statusError}>
+			<WarningRounded css={styles.timeoutWarning} />
+			<Link
+				target="_blank"
+				rel="noreferrer"
+				href={agent.troubleshooting_url}
+				css={styles.troubleshootLink}
+			>
+				Troubleshoot
+			</Link>
+		</div>
 	);
 };
 
 const StartErrorLifecycle: FC<AgentStatusProps> = ({ agent }) => {
 	return (
-		<HelpTooltip>
-			<PopoverTrigger role="status" aria-label="Start error">
-				<WarningRounded css={styles.errorWarning} />
-			</PopoverTrigger>
-			<HelpTooltipContent>
-				<HelpTooltipTitle>Error starting the agent</HelpTooltipTitle>
-				<HelpTooltipText>
-					Something went wrong during the agent startup.{" "}
-					<Link
-						target="_blank"
-						rel="noreferrer"
-						href={agent.troubleshooting_url}
-					>
-						Troubleshoot
-					</Link>
-					.
-				</HelpTooltipText>
-			</HelpTooltipContent>
-		</HelpTooltip>
+		<div css={styles.statusError}>
+			<WarningRounded css={styles.errorWarning} />
+			<Link
+				target="_blank"
+				rel="noreferrer"
+				href={agent.troubleshooting_url}
+				css={styles.troubleshootLink}
+			>
+				Troubleshoot
+			</Link>
+		</div>
 	);
 };
 
@@ -109,61 +86,43 @@ const ShuttingDownLifecycle: FC = () => {
 
 const ShutdownTimeoutLifecycle: FC<AgentStatusProps> = ({ agent }) => {
 	return (
-		<HelpTooltip>
-			<PopoverTrigger role="status" aria-label="Stop timeout">
-				<WarningRounded css={styles.timeoutWarning} />
-			</PopoverTrigger>
-			<HelpTooltipContent>
-				<HelpTooltipTitle>Agent is taking too long to stop</HelpTooltipTitle>
-				<HelpTooltipText>
-					We noticed this agent is taking longer than expected to stop.{" "}
-					<Link
-						target="_blank"
-						rel="noreferrer"
-						href={agent.troubleshooting_url}
-					>
-						Troubleshoot
-					</Link>
-					.
-				</HelpTooltipText>
-			</HelpTooltipContent>
-		</HelpTooltip>
+		<div css={styles.statusError}>
+			<WarningRounded css={styles.timeoutWarning} />
+			<Link
+				target="_blank"
+				rel="noreferrer"
+				href={agent.troubleshooting_url}
+				css={styles.troubleshootLink}
+			>
+				Troubleshoot
+			</Link>
+		</div>
 	);
 };
 
 const ShutdownErrorLifecycle: FC<AgentStatusProps> = ({ agent }) => {
 	return (
-		<HelpTooltip>
-			<PopoverTrigger role="status" aria-label="Stop error">
-				<WarningRounded css={styles.errorWarning} />
-			</PopoverTrigger>
-			<HelpTooltipContent>
-				<HelpTooltipTitle>Error stopping the agent</HelpTooltipTitle>
-				<HelpTooltipText>
-					Something went wrong while trying to stop the agent.{" "}
-					<Link
-						target="_blank"
-						rel="noreferrer"
-						href={agent.troubleshooting_url}
-					>
-						Troubleshoot
-					</Link>
-					.
-				</HelpTooltipText>
-			</HelpTooltipContent>
-		</HelpTooltip>
+		<div css={styles.statusError}>
+			<WarningRounded css={styles.errorWarning} />
+			<Link
+				target="_blank"
+				rel="noreferrer"
+				href={agent.troubleshooting_url}
+				css={styles.troubleshootLink}
+			>
+				Troubleshoot
+			</Link>
+		</div>
 	);
 };
 
 const OffLifecycle: FC = () => {
 	return (
-		<Tooltip title="Stopped">
-			<div
-				role="status"
-				aria-label="Stopped"
-				css={[styles.status, styles.disconnected]}
-			/>
-		</Tooltip>
+		<div
+			role="status"
+			aria-label="Stopped"
+			css={[styles.status, styles.disconnected]}
+		/>
 	);
 };
 
@@ -205,78 +164,135 @@ const ConnectedStatus: FC<AgentStatusProps> = ({ agent }) => {
 
 const DisconnectedStatus: FC = () => {
 	return (
-		<Tooltip title="Disconnected">
-			<div
-				role="status"
-				aria-label="Disconnected"
-				css={[styles.status, styles.disconnected]}
-			/>
-		</Tooltip>
+		<div
+			role="status"
+			aria-label="Disconnected"
+			css={[styles.status, styles.disconnected]}
+		/>
 	);
 };
 
 const ConnectingStatus: FC = () => {
 	return (
-		<Tooltip title="Connecting...">
-			<div
-				role="status"
-				aria-label="Connecting..."
-				css={[styles.status, styles.connecting]}
-			/>
-		</Tooltip>
+		<div
+			role="status"
+			aria-label="Connecting..."
+			css={[styles.status, styles.connecting]}
+		/>
 	);
 };
 
 const TimeoutStatus: FC<AgentStatusProps> = ({ agent }) => {
 	return (
-		<HelpTooltip>
-			<PopoverTrigger role="status" aria-label="Timeout">
-				<WarningRounded css={styles.timeoutWarning} />
-			</PopoverTrigger>
-			<HelpTooltipContent>
-				<HelpTooltipTitle>Agent is taking too long to connect</HelpTooltipTitle>
-				<HelpTooltipText>
-					We noticed this agent is taking longer than expected to connect.{" "}
-					<Link
-						target="_blank"
-						rel="noreferrer"
-						href={agent.troubleshooting_url}
-					>
-						Troubleshoot
-					</Link>
-					.
-				</HelpTooltipText>
-			</HelpTooltipContent>
-		</HelpTooltip>
+		<div css={styles.statusError}>
+			<WarningRounded css={styles.timeoutWarning} />
+		</div>
 	);
 };
 
 export const AgentStatus: FC<AgentStatusProps> = ({ agent }) => {
+	const statusText = getStatusText(agent);
+	const showTroubleshooting = 
+		agent.status === "timeout" || 
+		(agent.status === "connected" && (
+			agent.lifecycle_state === "start_timeout" || 
+			agent.lifecycle_state === "start_error" || 
+			agent.lifecycle_state === "shutdown_timeout" || 
+			agent.lifecycle_state === "shutdown_error"
+		));
+
 	return (
-		<ChooseOne>
-			<Cond condition={agent.status === "connected"}>
-				<ConnectedStatus agent={agent} />
-			</Cond>
-			<Cond condition={agent.status === "disconnected"}>
-				<DisconnectedStatus />
-			</Cond>
-			<Cond condition={agent.status === "timeout"}>
-				<TimeoutStatus agent={agent} />
-			</Cond>
-			<Cond>
-				<ConnectingStatus />
-			</Cond>
-		</ChooseOne>
+		<div css={styles.statusContainer}>
+			<ChooseOne>
+				<Cond condition={agent.status === "connected"}>
+					<ConnectedStatus agent={agent} />
+				</Cond>
+				<Cond condition={agent.status === "disconnected"}>
+					<DisconnectedStatus />
+				</Cond>
+				<Cond condition={agent.status === "timeout"}>
+					<TimeoutStatus agent={agent} />
+				</Cond>
+				<Cond>
+					<ConnectingStatus />
+				</Cond>
+			</ChooseOne>
+			<span css={styles.statusText}>{statusText}</span>
+			{showTroubleshooting && (
+				<Link
+					target="_blank"
+					rel="noreferrer"
+					href={agent.troubleshooting_url}
+					css={styles.troubleshootLink}
+				>
+					Troubleshoot
+				</Link>
+			)}
+		</div>
 	);
 };
 
+const getStatusText = (agent: WorkspaceAgent): string => {
+	switch (agent.status) {
+		case "connected":
+			switch (agent.lifecycle_state) {
+				case "ready":
+					return "Ready";
+				case "starting":
+					return "Starting...";
+				case "start_timeout":
+					return "Start timeout";
+				case "start_error":
+					return "Start error";
+				case "shutting_down":
+					return "Shutting down...";
+				case "shutdown_timeout":
+					return "Shutdown timeout";
+				case "shutdown_error":
+					return "Shutdown error";
+				case "off":
+					return "Stopped";
+				default:
+					return "Starting...";
+			}
+		case "disconnected":
+			return "Disconnected";
+		case "timeout":
+			return "Connection timeout";
+		default:
+			return "Connecting...";
+	}
+};
+
 const styles = {
+	statusContainer: {
+		display: "flex",
+		alignItems: "center",
+		gap: 8,
+	},
 	status: {
 		width: 6,
 		height: 6,
 		borderRadius: "100%",
 		flexShrink: 0,
 	},
+	statusText: (theme) => ({
+		fontSize: 14,
+		color: theme.palette.text.secondary,
+	}),
+	statusError: {
+		display: "flex",
+		alignItems: "center",
+		gap: 4,
+	},
+	troubleshootLink: (theme) => ({
+		fontSize: 12,
+		color: theme.palette.primary.main,
+		textDecoration: "none",
+		"&:hover": {
+			textDecoration: "underline",
+		},
+	}),
 
 	connected: (theme) => ({
 		backgroundColor: theme.palette.success.light,
