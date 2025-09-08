@@ -21,23 +21,29 @@ import type { FC } from "react";
 
 const ReadyLifecycle: FC = () => {
 	return (
-		<div
-			role="status"
-			data-testid="agent-status-ready"
-			aria-label="Ready"
-			css={[styles.status, styles.connected]}
-		/>
+		<div css={styles.statusWrapper}>
+			<div
+				role="status"
+				data-testid="agent-status-ready"
+				aria-label="Ready"
+				css={[styles.status, styles.connected]}
+			/>
+			<span>Ready</span>
+		</div>
 	);
 };
 
 const StartingLifecycle: FC = () => {
 	return (
-		<Tooltip title="Starting...">
-			<div
-				role="status"
-				aria-label="Starting..."
-				css={[styles.status, styles.connecting]}
-			/>
+		<Tooltip title="Agent is starting up...">
+			<div css={styles.statusWrapper}>
+				<div
+					role="status"
+					aria-label="Starting..."
+					css={[styles.status, styles.connecting]}
+				/>
+				<span>Starting...</span>
+			</div>
 		</Tooltip>
 	);
 };
@@ -50,19 +56,28 @@ const StartTimeoutLifecycle: FC<AgentStatusProps> = ({ agent }) => {
 	return (
 		<HelpTooltip>
 			<PopoverTrigger role="status" aria-label="Agent timeout">
-				<WarningRounded css={styles.timeoutWarning} />
+				<div css={styles.statusWrapper}>
+					<WarningRounded css={styles.timeoutWarning} />
+					<span>Start Timeout</span>
+				</div>
 			</PopoverTrigger>
 
 			<HelpTooltipContent>
 				<HelpTooltipTitle>Agent is taking too long to start</HelpTooltipTitle>
 				<HelpTooltipText>
-					We noticed this agent is taking longer than expected to start.{" "}
+					The agent is taking longer than expected to start. This could be due to:
+					<ul>
+						<li>Slow network connection</li>
+						<li>High system load</li>
+						<li>Insufficient resources</li>
+					</ul>
+					Check the agent logs for more information. If the issue persists,{" "}
 					<Link
 						target="_blank"
 						rel="noreferrer"
 						href={agent.troubleshooting_url}
 					>
-						Troubleshoot
+						troubleshoot the agent
 					</Link>
 					.
 				</HelpTooltipText>
@@ -272,10 +287,17 @@ export const AgentStatus: FC<AgentStatusProps> = ({ agent }) => {
 
 const styles = {
 	status: {
-		width: 6,
-		height: 6,
+		width: 12,
+		height: 12,
 		borderRadius: "100%",
 		flexShrink: 0,
+		marginRight: 8,
+	},
+	statusWrapper: {
+		display: "flex",
+		alignItems: "center",
+		fontSize: 14,
+		fontWeight: 500,
 	},
 
 	connected: (theme) => ({

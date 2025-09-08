@@ -26,6 +26,7 @@ import { WorkspaceDeletedBanner } from "./WorkspaceDeletedBanner";
 import { WorkspaceTopbar } from "./WorkspaceTopbar";
 import type { WorkspacePermissions } from "./permissions";
 import { resourceOptionValue, useResourcesNav } from "./useResourcesNav";
+import { UnhealthyAgentsSection } from "modules/resources/UnhealthyAgentsSection";
 
 export interface WorkspaceProps {
 	handleStart: (buildParameters?: TypesGen.WorkspaceBuildParameter[]) => void;
@@ -228,6 +229,11 @@ export const Workspace: FC<WorkspaceProps> = ({
 							handleClick={() => navigate("/templates")}
 						/>
 					)}
+					
+					{/* Display unhealthy agents section at the top */}
+					<UnhealthyAgentsSection 
+						agents={workspace.latest_build.resources.flatMap(resource => resource.agents ?? [])} 
+					/>
 
 					{shouldShowProvisionerAlert && (
 						<ProvisionerStatusAlert
