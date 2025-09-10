@@ -40,6 +40,34 @@ func randomAPIKeyParts() (id string, secret string) {
 }
 
 func TestAPIKey(t *testing.T) {
+	t.Run("ErrorIncludesEnvironmentContext", func(t *testing.T) {
+		t.Parallel()
+		var (
+			db = dbmem.New()
+			r  = httptest.NewRequest("GET", "/", nil)
+			rw = httptest.NewRecorder()
+		)
+		r.Host = "test.coder.com"
+
+		httpmw.ExtractAPIKeyMW(httpmw.ExtractAPIKeyConfig{
+			DB:              db,
+			RedirectToLogin: false,
+		})(successHandler).ServeHTTP(rw, r)
+		res := rw.Result()
+		defer res.Body.Close()
+		require.Equal(t, http.StatusUnauthorized, res.StatusCode)
+
+		var resp codersdk.Response
+		err := json.NewDecoder(res.Body).Decode(&resp)
+		require.NoError(t, err)
+
+		expectedURL := "https://" + r.Host
+		require.Contains(t, resp.Message, expectedURL)
+		logCommand := fmt.Sprintf("coder login %s", expectedURL)
+		require.Contains(t, resp.Message, logCommand)
+	})
+
+
 	t.Parallel()
 
 	// assertActorOk asserts all the properties of the user auth are ok.

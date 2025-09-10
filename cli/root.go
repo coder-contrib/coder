@@ -40,6 +40,7 @@ import (
 	"github.com/coder/coder/v2/cli/telemetry"
 	"github.com/coder/coder/v2/codersdk"
 	"github.com/coder/coder/v2/codersdk/agentsdk"
+	"github.com/coder/coder/v2/cli/env"
 )
 
 var (
@@ -72,7 +73,9 @@ const (
 	varDisableDirect           = "disable-direct-connections"
 	varDisableNetworkTelemetry = "disable-network-telemetry"
 
-	notLoggedInMessage = "You are not logged in. Try logging in using 'coder login <url>'."
+	// notLoggedInMessage is used when the user is not logged in.
+	// This function returns the message with environment-specific context.
+	notLoggedInMessage = "You are not logged in."
 
 	envNoVersionCheck   = "CODER_NO_VERSION_WARNING"
 	envNoFeatureWarning = "CODER_NO_FEATURE_WARNING"
@@ -534,7 +537,7 @@ func (r *RootCmd) InitClient(client *codersdk.Client) serpent.MiddlewareFunc {
 				rawURL, err := conf.URL().Read()
 				// If the configuration files are absent, the user is logged out
 				if os.IsNotExist(err) {
-					return xerrors.New(notLoggedInMessage)
+					return xerrors.Errorf("%s. %s", notLoggedInMessage, FormatLoginCommand(env.CODER_URL, env.CODER_SSH_CONFIG_BINARY_PATH))
 				}
 				if err != nil {
 					return err
@@ -1396,4 +1399,18 @@ func fullYamlName(opt serpent.Option) string {
 	}
 	_, _ = full.WriteString(opt.YAML)
 	return full.String()
+}
+
+// FormatLoginCommand returns a formatted login command suggestion based on the environment variables.
+func FormatLoginCommand(coderURL, coderBinary string) string {
+	var cmd strings.Builder
+	cmd.WriteString("Try logging in using: ")
+
+	if coderBinary != "" {
+		cmd.WriteString(fmt.Sprintf("'%s login %s'", coderBinary, coderURL))
+	} else {
+		cmd.WriteString(fmt.Sprintf("'coder login %s'", coderURL))
+	}
+
+	return cmd.String()
 }

@@ -80,6 +80,27 @@ const (
 	internalErrorMessage  = "An internal error occurred. Please try again or contact the system administrator."
 )
 
+// FormatLoginCommand returns a formatted login command suggestion based on the request context.
+// It includes environment variables like CODER_URL and other relevant configuration.
+func FormatLoginCommand(r *http.Request) string {
+	var cmd strings.Builder
+	cmd.WriteString("Try logging in using: ")
+
+	// If CODER_URL environment variable is set, use that
+	coderURL := os.Getenv("CODER_URL")
+	if coderURL == "" {
+		// Otherwise use the request URL as a fallback
+		coderURL = fmt.Sprintf("%s://%s", r.URL.Scheme, r.URL.Host)
+	}
+
+	if coderBinary := os.Getenv("CODER_SSH_CONFIG_BINARY_PATH"); coderBinary != "" {
+		cmd.WriteString(fmt.Sprintf("'%s login %s'", coderBinary, coderURL))
+	} else {
+		cmd.WriteString(fmt.Sprintf("'coder login %s'", coderURL))
+	}
+	return cmd.String()
+}
+
 type ExtractAPIKeyConfig struct {
 	DB                          database.Store
 	ActivateDormantUser         func(ctx context.Context, u database.User) (database.User, error)
@@ -149,7 +170,7 @@ func APIKeyFromRequest(ctx context.Context, db database.Store, sessionTokenFunc 
 	token := tokenFunc(r)
 	if token == "" {
 		return nil, codersdk.Response{
-			Message: SignedOutErrorMessage,
+			Message: fmt.Sprintf("%s", FormatLoginCommand(r)),
 			Detail:  fmt.Sprintf("Cookie %q or query parameter must be provided.", codersdk.SessionTokenCookie),
 		}, false
 	}
@@ -157,7 +178,7 @@ func APIKeyFromRequest(ctx context.Context, db database.Store, sessionTokenFunc 
 	keyID, keySecret, err := SplitAPIToken(token)
 	if err != nil {
 		return nil, codersdk.Response{
-			Message: SignedOutErrorMessage,
+			Message: fmt.Sprintf("%s", FormatLoginCommand(r)),
 			Detail:  "Invalid API key format: " + err.Error(),
 		}, false
 	}
@@ -167,7 +188,7 @@ func APIKeyFromRequest(ctx context.Context, db database.Store, sessionTokenFunc 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, codersdk.Response{
-				Message: SignedOutErrorMessage,
+				Message: fmt.Sprintf("%s", FormatLoginCommand(r)),
 				Detail:  "API key is invalid.",
 			}, false
 		}
@@ -182,7 +203,7 @@ func APIKeyFromRequest(ctx context.Context, db database.Store, sessionTokenFunc 
 	hashedSecret := sha256.Sum256([]byte(keySecret))
 	if subtle.ConstantTimeCompare(key.HashedSecret, hashedSecret[:]) != 1 {
 		return nil, codersdk.Response{
-			Message: SignedOutErrorMessage,
+			Message: fmt.Sprintf("%s", FormatLoginCommand(r)),
 			Detail:  "API key secret is invalid.",
 		}, false
 	}
@@ -229,6 +250,7 @@ func ExtractAPIKey(rw http.ResponseWriter, r *http.Request, cfg ExtractAPIKeyCon
 
 	key, resp, ok := APIKeyFromRequest(ctx, cfg.DB, cfg.SessionTokenFunc, r)
 	if !ok {
+		resp.Message = fmt.Sprintf("%s\n%s", resp.Message, FormatLoginCommand(r))
 		return optionalWrite(http.StatusUnauthorized, resp)
 	}
 
@@ -247,7 +269,7 @@ func ExtractAPIKey(rw http.ResponseWriter, r *http.Request, cfg ExtractAPIKeyCon
 		})
 		if errors.Is(err, sql.ErrNoRows) {
 			return optionalWrite(http.StatusUnauthorized, codersdk.Response{
-				Message: SignedOutErrorMessage,
+				Message: fmt.Sprintf("%s", FormatLoginCommand(r)),
 				Detail:  "You must re-authenticate with the login provider.",
 			})
 		}
@@ -318,7 +340,7 @@ func ExtractAPIKey(rw http.ResponseWriter, r *http.Request, cfg ExtractAPIKeyCon
 	// in site/src/components/RequireAuth/RequireAuth.tsx as well.
 	if key.ExpiresAt.Before(now) {
 		return optionalWrite(http.StatusUnauthorized, codersdk.Response{
-			Message: SignedOutErrorMessage,
+			Message: fmt.Sprintf("%s", FormatLoginCommand(r)),
 			Detail:  fmt.Sprintf("API key expired at %q.", key.ExpiresAt.String()),
 		})
 	}
