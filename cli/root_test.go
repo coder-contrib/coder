@@ -77,6 +77,31 @@ func TestCommandHelp(t *testing.T) {
 
 func TestRoot(t *testing.T) {
 	t.Parallel()
+
+	t.Run("LoginMessage_WithoutURL", func(t *testing.T) {
+		t.Parallel()
+
+		// Make sure CODER_URL is not set
+		os.Unsetenv("CODER_URL")
+
+		inv, _ := clitest.New(t, "list")
+		err := inv.Run()
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "Try logging in using 'coder login <url>'")
+	})
+
+	t.Run("LoginMessage_WithURL", func(t *testing.T) {
+		t.Parallel()
+
+		const testURL = "https://test.coder.com"
+		t.Setenv("CODER_URL", testURL)
+
+		inv, _ := clitest.New(t, "list")
+		err := inv.Run()
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "Try logging in using 'coder login "+testURL+"'")
+	})
+
 	t.Run("MissingRootCommand", func(t *testing.T) {
 		t.Parallel()
 

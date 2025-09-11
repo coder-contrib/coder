@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"os"
 	"net/url"
 	"strings"
 	"time"
@@ -76,9 +77,22 @@ func (c *OAuth2Configs) IsZero() bool {
 }
 
 const (
+	// envURL is imported from cli/root.go
+	envURL = "CODER_URL"
+	
 	SignedOutErrorMessage = "You are signed out or your session has expired. Please sign in again to continue."
 	internalErrorMessage  = "An internal error occurred. Please try again or contact the system administrator."
 )
+
+// getLoginCommand returns a command string to login with coder CLI
+// It respects the CODER_URL environment variable if set
+func getLoginCommand() string {
+	url := os.Getenv(envURL)
+	if url == "" {
+		return "'coder login <url>'"
+	}
+	return fmt.Sprintf("'coder login %s'", url)
+}
 
 type ExtractAPIKeyConfig struct {
 	DB                          database.Store
@@ -150,7 +164,7 @@ func APIKeyFromRequest(ctx context.Context, db database.Store, sessionTokenFunc 
 	if token == "" {
 		return nil, codersdk.Response{
 			Message: SignedOutErrorMessage,
-			Detail:  fmt.Sprintf("Cookie %q or query parameter must be provided.", codersdk.SessionTokenCookie),
+			Detail:  fmt.Sprintf("Cookie %q or query parameter must be provided. Try logging in again with %s", codersdk.SessionTokenCookie, getLoginCommand()),
 		}, false
 	}
 
@@ -158,7 +172,7 @@ func APIKeyFromRequest(ctx context.Context, db database.Store, sessionTokenFunc 
 	if err != nil {
 		return nil, codersdk.Response{
 			Message: SignedOutErrorMessage,
-			Detail:  "Invalid API key format: " + err.Error(),
+			Detail:  "Invalid API key format: " + err.Error() + ". Try logging in again with " + getLoginCommand(),
 		}, false
 	}
 
@@ -168,7 +182,7 @@ func APIKeyFromRequest(ctx context.Context, db database.Store, sessionTokenFunc 
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, codersdk.Response{
 				Message: SignedOutErrorMessage,
-				Detail:  "API key is invalid.",
+				Detail:  "API key is invalid. Try logging in again with " + getLoginCommand(),
 			}, false
 		}
 
@@ -183,7 +197,7 @@ func APIKeyFromRequest(ctx context.Context, db database.Store, sessionTokenFunc 
 	if subtle.ConstantTimeCompare(key.HashedSecret, hashedSecret[:]) != 1 {
 		return nil, codersdk.Response{
 			Message: SignedOutErrorMessage,
-			Detail:  "API key secret is invalid.",
+			Detail:  "API key secret is invalid. Try logging in again with " + getLoginCommand(),
 		}, false
 	}
 
@@ -319,7 +333,7 @@ func ExtractAPIKey(rw http.ResponseWriter, r *http.Request, cfg ExtractAPIKeyCon
 	if key.ExpiresAt.Before(now) {
 		return optionalWrite(http.StatusUnauthorized, codersdk.Response{
 			Message: SignedOutErrorMessage,
-			Detail:  fmt.Sprintf("API key expired at %q.", key.ExpiresAt.String()),
+			Detail:  fmt.Sprintf("API key expired at %q. Try logging in again with %s", key.ExpiresAt.String(), getLoginCommand()),
 		})
 	}
 
